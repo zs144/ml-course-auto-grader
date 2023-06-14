@@ -2,6 +2,8 @@
 ================================================================================
 HW submission (with errors) for the example Gradescope assignment.
 --------------------------------------------------------------------------------
+Source: https://github.com/gradescope/autograder_samples/tree/master/python/src/incorrect_1
+
 This file creates a Caculator class that modelizes an infix calculator read-eval-print
 loop (REPL).
 ================================================================================
