@@ -21,7 +21,7 @@ graph LR
 
 <p style="text-align: center;"> Figure 3. ROC curve generation process</p>
 
-Figure 3 summarizes the procedure to derive a ROC curve. Since we already specify the model and provide the training/testing set, the main factors that affect the outline of a ROC curve are the estimated parameters and the selection of thresholds. The former directly determines the quality of a classifier (distance to the top-left corner), whereas the latter may also significantly affect the visualization if the selection doesn't match the distribution of the decision statistics.
+Figure 3 summarizes the procedure to derive a ROC curve. Since we already specify the model and provide the training/testing set, the main factors that affect the shape of a ROC curve are the estimation of parameters and the selection of thresholds. The former directly determines the quality of a classifier (distance to the top-left corner), whereas the latter may also significantly affect the visualization if the selection is not representative enough for all differenet levels of $P_d$ and $P_{fa}$.
 
 
 
@@ -34,7 +34,7 @@ Figure 3 summarizes the procedure to derive a ROC curve. Since we already specif
   
 - The `thresholds` column in the ROC data table is not sorted.
   
-  This will cause the ROC curve to move back and forth, forming a messy plot. Pre-checking if the ROC data input is monotonic increasing/decreasing.
+  This will cause the ROC curve to bounce back and forth, forming a messy graph. Pre-checking if the ROC data input is monotonic increasing/decreasing.
 
 
 
