@@ -1,0 +1,2 @@
+- [ ] Q1. To compare student's ROC curve with our ROC curve, I think we can just require them to upload ROC data in a CSV.
+- [ ] Q1. how to check if students are able to draw ROC curves?
