@@ -38,7 +38,7 @@ Figure 3 summarizes the procedure to derive a ROC curve. Since we already specif
   
   ==State==: ⚠️
   
-  ==Solution==: We will calculate the confidence interval of ABC based on all submissions (including the historical submissions). If a student's ABC is not in the interval, then we may need to manually check his/her code to see the implementation. But this method only detects a part of submissions with this mistake. What if they use a wrong model but end up with a reasonable ABC?
+  ==Solution==: We will calculate the confidence interval of ABC based on all submissions (including the historical submissions). If a student's ABC is not in the interval, then we may need to manually check his/her code to see the implementation. <span style="color:#9900FF">But this method only detects a part of submissions with this mistake. What if they use a wrong model but end up with a reasonable ABC?</span>
   
 - The `P_d` and `P_fa` column in the ROC data table is not sorted.
   
@@ -60,7 +60,15 @@ Figure 3 summarizes the procedure to derive a ROC curve. Since we already specif
 
   ==Solution==: run the code twice with different input data, and check if the outputs are the same.
 
-  
+- Put $P_{fa}$ data into `P_d` column and $P_d$ data into `P_fa` column
+
+  This will plot the curve which is the mirror symmetry of the true ROC curve over the diagnoal of the coordinator ($y = x$ or $P_d = P_{fa}$). 
+
+  ==State==: ⚠️
+
+  ==Solution==: In practice, a normal ROC curve tends to locate above the diagonal, so the mirror symmetry of it will be lower than the diagonal at every `P_fa` level. We can check this by measuring the AUC of a ROC curve and the AUC of the diagonal. If cond 1. the diagonal has a bigger AUC **AND** cond 2. the ROC curve has a bigger AUC when we flipped `P_d` and `P_fa`, then we can confirm that the student may mistakenly put $P_d$ and $P_fa$ data into the wrong columns. <span style="color:#9900FF">But there are some very special cases where the ROC curve is higher than the diagonal in some areas but lower in others, even though we didn't encounter one in ECE 580. Should we take this into condideration?</span> Maybe give some sample data and sample ROC curve to help them double-check.
+
+
 
 
 
@@ -112,11 +120,14 @@ def get_decision_statistics(params, input_X):
         in input data.
         
     Returns:
-    	decision_statistics (array-like of shape (n_samples,)): decision statistics for
+    	decision_statistics (list of length (n_features)): decision statistics for
     	each obs. This is calculated by $w^T * X + b$, where `w` and `b` are provided
-    	in `params`.
+    	in `params`. They should be placed in the same order as they are in `input_X`,
+    	ie, the decision statistics of the first obs in `input_X` is the first element
+    	in `decision_statistics`, and so on.
     """
     # TODO: implement this function
+    decision_statistics = ...
     return decision_statistics
 
 
@@ -124,13 +135,13 @@ def get_ROC_data(thresholds, truth, decision_stats):
     """Generate a Pandas dataframe with the columns of thresholds, P_d and P_fa.
 
     Parameters:
-        - thresholds (array-like): a list of thresholds.
+        - thresholds (array-like of shape (n_thresholds,)): a list of thresholds.
         - truth (array-like of shape (n_samples,)): true class for each obs.
-        - decision_stats (array-like of shape (n_samples,)): decision
+        - decision_stats (list of length (n_features)): decision
         statistics of each observation.
 
     Returns:
-        ROC_data (pd.DataFrame of shape (n_samples, 3)):
+        ROC_data (pd.DataFrame of shape (n_thresholds, 3)):
         The first column is the list of thresholds; The second column is the
         percentage of detection (P_d) under the given threshold, and the third
         column is the percentage of false alarm (P_fa) under the given threshold.
@@ -148,7 +159,7 @@ def draw_one_ROC(ROC_data):
     """Draw one ROC curve.
 
     Parameters:
-    - ROC_data (pd.DataFrame of shape (n_samples, 3)): a Pandas dataframe with three
+    - ROC_data (pd.DataFrame of shape (n_thresholds, 3)): a Pandas dataframe with three
     colomns.
     	- The first column is the `thresholds`;
     	- The second colummn is `P_d`;
@@ -157,17 +168,30 @@ def draw_one_ROC(ROC_data):
     # TODO: implement this function
 ```
 
-When we test the code, we will use the black-box testing.
+When we test the code, we will use the opaque-box testing, meaning that we will pass some test inputs and expect to see the correct output from the code. This automatic ROC curve grader won't open the opaque box. In other words, it won't check the function body of these functions in details. This is because we allow students to have different implementations as long as they have the same interface.
 
 #### 1.1 Check the trained model (estimated parameters)
 
+- check the type/length of `params` (type=`class.dict` and length = 2).
+- check the type/length of `params['w']` (type=`list` and length = `n_features`).
+- Check the type of `params['b']` (type = `float`).
+- Give two differnt training data and check if students hardcode the output.
+
 #### 1.2 Check the decision statistics
+
+- check the type/length of `decision_statistics` (type=`list` and length = `n_samples`).
+- Give two different `input_X` and check if students hardcode the output.
 
 #### 1.3 Check the ROC data
 
+- check the type/length of `ROC_data` (type=`pd.DataFrame` and length = `(n_thresholds, 3)`).
+- check the order of `P_d` and `P_fa` (they should be either increasing or decreasing).
+- check whether `P_d` and `P_fa` are placed into the wrong columns (we will do this in Part 2 actually).
+- Give two different `thresholds` and check if students hardcode the output.
+
 #### 1.4 Check the ROC curve
 
-
+- Manually check
 
 ### Part 2
 
@@ -194,3 +218,8 @@ inf,0,0
 4673.600000,0.01,0.00
 ```
 
+
+
+## Memo
+
+Give students some sample data and an expected ROC curve for them to debug their bug
