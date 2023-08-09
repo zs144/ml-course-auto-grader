@@ -96,8 +96,8 @@ def train_classifier(train_X, train_y):
         params (dictionary with two elements): estimated parameters of the model.
         The classifier has the form of: $f(X) = w^T * X + b$. `params` stores two
         elements - w and b.
-        	- `w` (list of length (n_features)): parameter for each feature.
-        	- `b` (float): intercept term.
+        	- `w` (array-like of shape (n_features,)): parameter for each feature.
+        	- `b` (np.float64): intercept term.
     """
     # TODO: implement this function
     params = {}
@@ -120,7 +120,7 @@ def get_decision_statistics(params, input_X):
         in input data.
         
     Returns:
-    	decision_statistics (list of length (n_features)): decision statistics for
+    	decision_statistics (array-like of shape (n_samples,)): decision statistics for
     	each obs. This is calculated by $w^T * X + b$, where `w` and `b` are provided
     	in `params`. They should be placed in the same order as they are in `input_X`,
     	ie, the decision statistics of the first obs in `input_X` is the first element
@@ -137,7 +137,7 @@ def get_ROC_data(thresholds, truth, decision_stats):
     Parameters:
         - thresholds (array-like of shape (n_thresholds,)): a list of thresholds.
         - truth (array-like of shape (n_samples,)): true class for each obs.
-        - decision_stats (list of length (n_features)): decision
+        - decision_stats (array-like of shape (n_samples,)): decision
         statistics of each observation.
 
     Returns:
@@ -173,13 +173,13 @@ When we test the code, we will use the opaque-box testing, meaning that we will 
 #### 1.1 Check the trained model (estimated parameters)
 
 - check the type/length of `params` (type=`class.dict` and length = 2).
-- check the type/length of `params['w']` (type=`list` and length = `n_features`).
+- check the type/length of `params['w']` (type=`np.ndarray` and shape = `(n_features,)`).
 - Check the type of `params['b']` (type = `float`).
 - Give two differnt training data and check if students hardcode the output.
 
 #### 1.2 Check the decision statistics
 
-- check the type/length of `decision_statistics` (type=`list` and length = `n_samples`).
+- check the type/length of `decision_statistics` (type=`np.ndarray` and shape = `(n_samples,)`).
 - Give two different `input_X` and check if students hardcode the output.
 
 #### 1.3 Check the ROC data
@@ -222,4 +222,4 @@ inf,0,0
 
 ## Memo
 
-Give students some sample data and an expected ROC curve for them to debug their bug
+Give students some sample data and an expected ROC curve for them to debug their code
