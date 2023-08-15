@@ -51,7 +51,6 @@ def get_decision_statistics(params, input_X):
     w = params['w']
     b = params['b']
     decision_statistics = np.dot(input_X, w) + b
-    decision_statistics = decision_statistics.tolist()
     return decision_statistics
 
 
@@ -81,6 +80,7 @@ def get_ROC_data(thresholds, truth, decision_stats):
                                 sum((decision_stats>=row.thresholds) & (truth==0))/H0,
                                 axis = 1)
 
+    ROC_data.sort_values(by='thresholds', ascending=False, inplace=True)
     ROC_data.to_csv('student_ROC_data.csv')
     return ROC_data
 

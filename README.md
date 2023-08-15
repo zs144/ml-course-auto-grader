@@ -222,4 +222,6 @@ inf,0,0
 
 ## Memo
 
-Give students some sample data and an expected ROC curve for them to debug their code
+Give students some sample data and an expected ROC curve for them to debug their code.
+
+Students will be given a Jupyter notebook, a samll sample data, the complete training data, and a `student-utils.py` scripts for them to implement the utility functions.
