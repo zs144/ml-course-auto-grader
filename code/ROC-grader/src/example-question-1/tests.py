@@ -1,5 +1,7 @@
 import unittest
-from student_utils import *
+import student_utils
+import std_utils
+import tests_utils
 
 import copy
 import numpy as np
@@ -34,7 +36,9 @@ class TestROCGenerator(unittest.TestCase):
         pass
 
     def test_step1(self): # step 1: training the clf
-        self.__class__.params = train_classifier(self.__class__.train_X, self.__class__.train_y)
+        train_X = self.__class__.train_X
+        train_y = self.__class__.train_y
+        self.__class__.params = student_utils.train_classifier(train_X, train_y)
         w = self.__class__.params['w']
         b = self.__class__.params['b']
         # Check the type of params
@@ -55,7 +59,7 @@ class TestROCGenerator(unittest.TestCase):
         # Check if there is hardcoding
         new_train_X = self.__class__.new_data[['x', 'y']].values
         new_train_Y = self.__class__.new_data['truth']
-        new_params = train_classifier(new_train_X, new_train_Y)
+        new_params = student_utils.train_classifier(new_train_X, new_train_Y)
         new_w = new_params['w']
         new_b = new_params['b']
         cmp = ((w == new_w).all() and (b == new_b))
@@ -66,7 +70,7 @@ class TestROCGenerator(unittest.TestCase):
         print('Good job! No error in step 1!')
 
     def test_step2(self): # step 2: generating decision statistics
-        self.__class__.decision_stats = get_decision_statistics(self.__class__.params, self.__class__.train_X)
+        self.__class__.decision_stats = student_utils.get_decision_statistics(self.__class__.params, self.__class__.train_X)
         # Check the type of decision stats
         error_msg = 'Incorrect data type of decision statistics'
         self.assertIsInstance(self.__class__.decision_stats, np.ndarray, error_msg)
@@ -75,16 +79,17 @@ class TestROCGenerator(unittest.TestCase):
         self.assertEqual(self.__class__.decision_stats.shape, (self.__class__.n_samples,), error_msg)
         # Check if there is hardcoding
         new_train_X = self.__class__.new_data[['x', 'y']].values
-        new_decision_stats = get_decision_statistics(self.__class__.params, new_train_X)
+        new_decision_stats = student_utils.get_decision_statistics(self.__class__.params, new_train_X)
         cmp = (self.__class__.decision_stats == new_decision_stats).all()
         error_msg = 'You seem to hardcode the result!'
         self.assertEqual(cmp, False, error_msg)
+
         # If passes all:
         print('Good job! No error in step 2!')
 
     def test_step3(self): # step 3: generating ROC data
         thresholds = np.concatenate((self.__class__.decision_stats, extra))
-        self.__class__.ROC_data = get_ROC_data(thresholds, self.__class__.train_y, self.__class__.decision_stats)
+        self.__class__.ROC_data = student_utils.get_ROC_data(thresholds, self.__class__.train_y, self.__class__.decision_stats)
         self.__class__.ROC_data.reset_index(drop=True, inplace=True)
         # Check the type of ROC data
         error_msg = 'Incorrect data type of ROC data table (should be pd.DataFrame)'
@@ -103,19 +108,29 @@ class TestROCGenerator(unittest.TestCase):
         error_msg = 'P_d and P_fa are not sorted (both should be monotonic)'
         self.assertEqual(is_sorted_pd_and_pfa, True, error_msg)
         # Check if there is hardcoding
-        print(self.__class__.ROC_data.head())
         new_train_X = self.__class__.new_data[['x', 'y']].values
-        new_decision_stats = get_decision_statistics(self.__class__.params, new_train_X)
+        new_decision_stats = student_utils.get_decision_statistics(self.__class__.params, new_train_X)
         new_thresholds = np.concatenate((new_decision_stats, extra))
-        new_ROC_data = get_ROC_data(new_thresholds, self.__class__.train_y, new_decision_stats)
+        new_ROC_data = student_utils.get_ROC_data(new_thresholds, self.__class__.train_y, new_decision_stats)
         new_ROC_data.reset_index(drop=True, inplace=True)
-        print(new_ROC_data.head())
         cmp = (self.__class__.ROC_data == new_ROC_data).all().all() # comparing two dfs needs two all()
         error_msg = 'You seem to hardcode the result!'
         self.assertEqual(cmp, False, error_msg)
         # If passes all:
         print('Good job! No error in step 3!')
 
+    def test_step4(self): # step 4: check ABC
+        train_X = self.__class__.train_X
+        train_y = self.__class__.train_y
+        params = std_utils.train_classifier(train_X, train_y)
+        decision_stats = std_utils.get_decision_statistics(params, train_X)
+        thresholds = np.concatenate((decision_stats, extra))
+        our_ROC_data = std_utils.get_ROC_data(thresholds, train_y, decision_stats)
+        student_ROC_data = self.__class__.ROC_data
+        tests_utils.roc_curves_visual_cmp(our_ROC_data, student_ROC_data)
+        ABC = tests_utils.compute_ABC(our_ROC_data, student_ROC_data)
+        error_msg = 'ABC is big enough to be a warning!'
+        self.assertLessEqual(ABC, 0.04, error_msg)
 
 # run the test
 unittest.main(verbosity=2)

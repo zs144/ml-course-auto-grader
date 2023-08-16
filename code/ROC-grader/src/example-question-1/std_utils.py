@@ -22,7 +22,7 @@ def train_classifier(train_X, train_y):
         	- `b` (np.float64): intercept term.
     """
     # TODO: implement this function
-    my_clf = SVC(C=0.001, kernel="linear")
+    my_clf = SVC(C=10000, kernel="linear")
     my_clf.fit(train_X, train_y)
     params = {}
     params['w'] = my_clf.coef_.flatten()
