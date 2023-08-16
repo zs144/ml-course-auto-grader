@@ -2,15 +2,16 @@ import unittest
 import student_utils
 import std_utils
 
+import os
 import copy
 import numpy as np
 import pandas as pd
 from scipy import integrate
-from pathlib import Path
 from gradescope_utils.autograder_utils.decorators import weight, visibility, number
 
+
 # Set path
-hw_folder = Path('/Users/zionshane/Develop/ml-course-auto-grader/code/ROC-grader/src/example-question-1/')
+dirname = os.path.dirname(__file__)
 
 # Set constants
 POS_INF = float("inf")
@@ -38,7 +39,7 @@ def compute_ABC(our_ROC_data, student_ROC_data):
 
 
 class TestROCGenerator(unittest.TestCase):
-    data = pd.read_csv(hw_folder / 'data/dataSet4.csv', names=['truth', 'x', 'y'])
+    data = pd.read_csv(os.path.join(dirname, 'dataSet4.csv'), names=['truth', 'x', 'y'])
     data = data[['x', 'y', 'truth']]
     train_X = data[['x', 'y']].values
     train_y = data['truth']
@@ -48,7 +49,7 @@ class TestROCGenerator(unittest.TestCase):
     decision_stats = np.array([])
     ROC_data = pd.DataFrame([])
     # new data is to check hardcoding
-    new_data = pd.read_csv(hw_folder / 'data/dataSet1.csv', names=['truth', 'x', 'y'])
+    new_data = pd.read_csv(os.path.join(dirname, 'dataSet1.csv'), names=['truth', 'x', 'y'])
     new_data = new_data[['x', 'y', 'truth']]
 
     @classmethod
@@ -163,5 +164,3 @@ class TestROCGenerator(unittest.TestCase):
         error_msg = 'ABC is big enough to be a warning!'
         self.assertLessEqual(ABC, 0.04, error_msg)
 
-# run the test
-unittest.main(verbosity=2)
